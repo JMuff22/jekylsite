@@ -32,3 +32,10 @@ View the deployment at: http://test-jekyll7-test-jekyll.rahtiapp.fi/
 Source: https://www.redpill-linpro.com/sysadvent/2017/12/10/jekyll-openshift.html
 
 Setting up OC CLI: https://docs.csc.fi/cloud/rahti/usage/cli/
+
+
+## Deploy on Github action / push
+
+Rahti --> Builds --> Builds --> App name --> configuration --> GitHub Webhook URL 
+
+Copy and paste the URL into Github repo webhook. The secret is already attached. 

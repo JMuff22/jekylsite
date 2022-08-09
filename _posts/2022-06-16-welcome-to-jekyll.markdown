@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Welcome to Jekyll!"
+title:  "Welcome to Jekyll! Now with Hooks!"
 date:   2022-06-16 11:56:29 +0300
 categories: jekyll update
 ---
