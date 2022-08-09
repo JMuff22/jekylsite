@@ -10,7 +10,7 @@ COPY . /tmp
 WORKDIR /tmp
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C &&\
-    chmod 755 /etc/apt/trusted.gpg.d/
+    chmod 755 /etc/apt/trusted.gpg.d/ &&\
     apt-get -y update &&\
     apt-get -y install nginx &&\
     apt-get -y install software-properties-common &&\
