@@ -1,39 +1,33 @@
-FROM ubuntu:latest
-ENV NAME test-jekyll
+FROM ubuntu:latest 
 
-# Add multiverse repo. Install nginx, jekyll and some ruby-packages
-RUN \
-  sed -i 's/# \(.*multiverse$\)/\1/g' /etc/apt/sources.list && \
-  apt-get update && \
-  apt-get -y upgrade && \
-  apt-get install -y nginx jekyll ruby-bundler ruby-jekyll-feed ruby-jekyll-paginate && \
-  rm -rf /var/lib/apt/lists/* && \
-  rm -rf /var/www/html/* && \
-  sed -i -e 's/listen 80 default/listen 8080 default/' \
-         -e 's/listen \[::\]:80 default/listen \[::\]:8080 default/' /etc/nginx/sites-available/default
+LABEL maintainer="CSC Service Desk <servicedesk@csc.fi>"
 
-# Configure nginx to log to stdout and handle it running as non-root user-id
-RUN \
-  ln -sf /dev/stdout /var/log/nginx/access.log && \
-  ln -sf /dev/stderr /var/log/nginx/error.log && \
-  mkdir -p /var/cache/nginx /var/lib/nginx /var/log/nginx && \
-  chgrp -R 0 /var/cache/nginx /var/lib/nginx /var/log/nginx && \
-  chmod -R g=u /var/cache/nginx /var/lib/nginx /var/log/nginx && \
-  sed -i 's,/run/nginx.pid,/var/lib/nginx/nginx.pid,g' /etc/nginx/nginx.conf && \
-  sed -i -e '/^user/d' /etc/nginx/nginx.conf
+# These need to be owned and writable by the root group in OpenShift
+ENV ROOT_GROUP_DIRS='/var/run /var/log/nginx /var/lib/nginx'
+
+COPY . /tmp
+
+WORKDIR /tmp
+
+RUN apt-get -y update &&\
+    apt-get -y install nginx &&\
+    apt-get -y install software-properties-common &&\
+    add-apt-repository universe &&\
+    add-apt-repository multiverse &&\
+    apt-get -y install build-essential ruby ruby-dev &&\
+    gem install jekyll bundler &&\
+    gem install minima &&\
+    jekyll build -d /usr/share/nginx/html &&\
+    apt-get clean 
+
+RUN chgrp -R root ${ROOT_GROUP_DIRS} &&\
+    chmod -R g+rwx ${ROOT_GROUP_DIRS}
 
 
-WORKDIR /build
-ADD . /build
 
-# Run Jekyll. Put result in nginx default document root
-RUN \
-  bundle install --path=vendor && \
-  bundle exec jekyll build --destination /var/www/html/test-jekyll && \
-  apt-get -y remove ruby-dev build-essential && \
-  apt -y autoremove && \
-  apt clean
 
-# Start nginx in the foreground
-EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+COPY nginx.conf /etc/nginx
+
+EXPOSE 8000
+
+CMD [ "/usr/sbin/nginx" ]
