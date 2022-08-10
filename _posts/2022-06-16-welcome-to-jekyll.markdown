@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Welcome to the dev branch!  Now with Hooks!"
+title:  "Welcome to the dev branch!  Now with Hooks v2!"
 date:   2022-06-16 11:56:29 +0300
 categories: jekyll update
 ---
