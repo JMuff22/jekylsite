@@ -5,6 +5,22 @@ Currently does not work with Ubuntu. But works with `rockylinux:8` !
 
 Test the build locally with `docker build -t test-jekyll .` but will get stuck at the `git clone` stage. This is fine.
 
+Occasionally the build will fail for example:
+
+```
+Build Config Instantiate Failed — Build Config test-jekyll
+```
+
+This is likely due to hitting a pull limit. To get around this add your own docker hub credentials to the project on rahti. https://docs.csc.fi/cloud/rahti/tutorials/docker_hub_login/
+
+
+```
+oc -n test-jekyll secrets link builder test-jekyll --for=pull
+oc -n test-jekyll secrets link deployer test-jekyll --for=pull
+oc -n test-jekyll secrets link default test-jekyll --for=pull
+```
+
+
 Run on Rahti/Openshift with 
 
 ```
